@@ -1,0 +1,35 @@
+.services-header{
+    margin-top: 70px;
+    display: flex;
+    margin-bottom: 20px;
+}
+.services-header p{
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 57px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: default;
+    color: #333333;
+    margin-left: auto;
+}
+.services-header p:hover{
+    color: lightskyblue;
+}
+.line{
+    border-radius: 1px;
+    height: 1px;
+    background: #E0E0E0;
+    width: 100%;
+    margin-bottom: 90px;
+}
+@media screen and (max-width: 767px){
+    .services-header{
+        display: block;
+    }
+    .services-header a {
+        margin-left: 3px;
+    }
+
+}

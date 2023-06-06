@@ -1,0 +1,42 @@
+.reg-window{
+    width: 500px;
+    height: 700px;
+}
+.reg-window h1{
+    text-align: center;
+    font-family: '';
+}
+.reg-window a{
+    text-align: center;
+    font-family: '';
+}
+
+.inputs{
+    margin-left: 70px;
+    width: 390px;
+    word-wrap: break-word;
+}
+.inputs input{
+    width: 350px;
+    height: 40px;
+    border: none;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    padding-left: 15px;
+    font-size: 20px;
+}
+.reg-window input::placeholder{
+    font-size: 17px;
+}
+.picture{
+    width: 150px;
+    background: lightgrey;
+    border-radius: 70px;
+    margin: 30px auto;
+}
+.picture img{
+    width: 150px;
+}
+.cb{
+
+}

@@ -1,0 +1,68 @@
+.navbar{
+    margin-bottom: auto;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+}
+.brand, .list_item{
+    color: white !important;
+    text-decoration: none;
+}
+.list_item:hover{
+    color: dimgray !important;
+}
+footer{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    font-family: 'Montserrat';
+    user-select: none;
+    margin-top: 200px;
+}
+.connection{
+    background-image: url("../../img/UI/footer.png");
+    background-size: cover;
+    height: 644px;
+    width: 100%;
+    position: absolute;
+    flex-direction: column;
+}
+.connection-form{
+    margin: 80px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.liner{
+    width: 200px;
+    height: 2px;
+    background: #FFFFFF;
+    margin: auto;
+}
+.connection h1{
+    margin: 30px auto 30px;
+    text-align: center;
+    width: 600px;
+    color: #FFFFFF;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 32px;
+}
+.connection input{
+    margin-bottom: 25px;
+    background: #FFFFFF;
+    border-radius: 4px;
+    width: 350px;
+    height: 40px;
+    border: none;
+    padding-left: 15px;
+}
+.footer{
+    position: relative;
+    top: 640px;
+    width: 100%;
+    height: 669px;
+    background: #34495E;
+}
