@@ -7,6 +7,8 @@ import ComplexBlock from "../components/Blocks/ComplexBlock/ComplexBlock";
 import Paragraph from "../components/Paragraph/Paragraph";
 import {buhPage, rates, urPage} from "../data/StaticData";
 import {useLocation, useParams} from "react-router-dom";
+import {PaginatedItems} from "../components/Pagination/ServicePagination";
+import Card from "../components/Blocks/Card/Card";
 
 const ServicesList = (props) => {
 
@@ -30,6 +32,7 @@ const ServicesList = (props) => {
         },
     ]
 
+    const [data1, setData1] = useState([]);
     useEffect(() => {
         loadUsersData();
     }, [])
@@ -40,6 +43,7 @@ const ServicesList = (props) => {
             .then((response) =>
             {
                 setData(response.data);
+                console.log(data);
             })
             .catch((err) => console.log(err));
     }
@@ -125,16 +129,16 @@ const ServicesList = (props) => {
                     <div className="line" />
                     <div className="row">
                         <div className="row">
-                            {/*{data.length === 0 ? (*/}
-                            {/*        <div className="error">*/}
-                            {/*            <FontAwesomeIcon  icon={faXmark} size="2xl" style={{color: "red"}}/>*/}
-                            {/*            <h1>Такой услуги не найдено</h1>*/}
-                            {/*        </div>)*/}
-                            {/*    :*/}
-                            {/*    (*/}
-                            {/*        <PaginatedItems itemsPerPage={7} data={data} body={<Card title={data.title}/>}/>*/}
-                            {/*    )*/}
-                            {/*}*/}
+                            {data.length === 0 ? (
+                                    <div className="error">
+                                        <FontAwesomeIcon  icon={faXmark} size="2xl" style={{color: "red"}}/>
+                                        <h1>Такой услуги не найдено</h1>
+                                    </div>)
+                                :
+                                (
+                                    <PaginatedItems itemsPerPage={7} data={data} body={<Card title={data.title}/>}/>
+                                )
+                            }
                         </div>
                     </div>
                 </div>

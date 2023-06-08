@@ -1,0 +1,27 @@
+.update-modal{
+    width: 400px;
+    text-align: center;
+}
+.update-modal__input{
+    margin-top: 20px;
+}
+.update-modal__btn{
+    margin-left: 10px;
+}
+.nav-plus{
+    margin: 15px 0 20px 800px;
+}
+@media screen and (max-width: 1399px) {
+    .nav-plus{
+        margin: 0px 0 20px 500px;
+    }
+}
+.add-input{
+    margin: 10px auto !important;
+}
+.group-btn{
+    text-align: center;
+}
+.group-btn button{
+    margin-left: 20px;
+}

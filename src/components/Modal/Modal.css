@@ -29,8 +29,3 @@
 .modal__content.active{
     transform: scale(1);
 }
-.close-icon{
-    position: absolute;
-    left: 520px;
-    top: 0;
-}

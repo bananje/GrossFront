@@ -50,7 +50,7 @@ const About = () => {
 
     return (
         <div>
-            <div className="row about-header">
+            <div className="header-back">
 
             </div>
             <div className="container">

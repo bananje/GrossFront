@@ -6,6 +6,9 @@ const Authorization = (props) => {
     function modalClose() {
         props.modalHandle(false);
     }
+    function authorizeHandle(){
+        props.isAuthorize(true);
+    }
     return (
         <div className="auth-window">
             <div className="container">
@@ -15,7 +18,7 @@ const Authorization = (props) => {
                 </div>
                 <input placeholder="Имя пользователя"/><br/>
                 <input type="password" placeholder="Пароль"/><br/>
-                <BlueButton width={200}>Войти</BlueButton><br/><br/>
+                <BlueButton onClick={authorizeHandle} width={200}>Войти</BlueButton><br/><br/>
                 <a onClick={modalClose}>Нет аккаунта? Зарегистрируйтесь!</a>
             </div>
         </div>

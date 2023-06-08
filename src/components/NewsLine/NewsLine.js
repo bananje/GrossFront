@@ -3,6 +3,7 @@ import './NewsLine.css';
 import Slider from "react-slick";
 import NewsBox from "../Blocks/NewsBox/NewsBox";
 import {fakeNews} from "../../data/StaticData";
+import {ArrowBackIos, ArrowForwardIos} from "@mui/icons-material";
 
 const NewsLine = () => {
 
@@ -10,7 +11,7 @@ const NewsLine = () => {
         const {className, onClick} = props
         return(
             <div className={className} onClick={onClick}>
-                {/*<ArrowForwardIos style={{color: "white"}}/>*/}
+                <ArrowForwardIos style={{color: "white"}}/>
             </div>
         )
     }
@@ -18,7 +19,7 @@ const NewsLine = () => {
         const {className, onClick} = props
         return(
             <div className={className} onClick={onClick}>
-                {/*<ArrowBackIos style={{color: "white"}}/>*/}
+                <ArrowBackIos style={{color: "white"}}/>
             </div>
         )
     }

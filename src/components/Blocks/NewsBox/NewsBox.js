@@ -10,7 +10,8 @@ const NewsBox = ({props, button}) => {
         date: props.date,
         head: props.head,
         content: props.content,
-        img: props.img
+        img: props.img,
+        desc: props.desc
     };
 
     return (
@@ -29,7 +30,7 @@ const NewsBox = ({props, button}) => {
                 <div className="news-block__content">
                     {props.content}
                 </div>
-                <Link to="blog/post" state={state}><BlueButton>Посмотреть</BlueButton></Link>
+                <Link to="/post" state={state}><BlueButton>Посмотреть</BlueButton></Link>
             </div>
         </div>
     );

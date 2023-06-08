@@ -4,7 +4,7 @@ import {Link, useLocation} from "react-router-dom";
 
 const Post = () => {
     const location = useLocation();
-    console.log(location.state)
+    console.log(location.state.desc)
     return (
         <div>
             <div className="header-back"/>
@@ -25,8 +25,6 @@ const Post = () => {
                 <div className="text">
                     <p className="mt-5">{location.state.desc}</p>
                 </div>
-
-
             </div>
         </div>
     );

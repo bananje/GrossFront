@@ -17,7 +17,7 @@ function App() {
             <Route path="/" element={<Layout />}>
                 <Route path="" element={<Main />} />
                 <Route path="*" element={<Main />} />
-                <Route path="blog/post" element={<Post />} />
+                <Route path="post" element={<Post />} />
                 <Route path="main" element={<Main />}/>
                 <Route path="service" element={<Services />}/>
                 <Route path="blog" element={<Blog />}/>
