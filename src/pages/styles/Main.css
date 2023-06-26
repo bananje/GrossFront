@@ -52,12 +52,11 @@
     }
 }
 .lowTab{
-    width: 70%;
+    width: 100%;
     height: 96px;
+    margin: -140px auto;
     background: #FFFFFF;
     border-radius: 40px 40px 0px 0px;
-    position: absolute;
-    top: 610px;
 }
 
 .description-block__text{

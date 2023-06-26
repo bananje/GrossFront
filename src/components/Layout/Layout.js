@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Layout.css';
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {Link, NavLink, Outlet} from "react-router-dom";
@@ -8,15 +8,45 @@ import Modal from "../Modal/Modal";
 import Authorization from "../Authorization/Authorization";
 import Registration from "../Registration/Registration";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faGear, faUser} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRightFromBracket, faGear, faUser} from "@fortawesome/free-solid-svg-icons";
 import {Button} from "@mui/material";
+import jwt_decode from "jwt-decode";
 
+export function validateToken(token){
+    try {
+        const decodedToken = jwt_decode(token);
+        const currentTime = Date.now() / 1000;
+
+        if(decodedToken.exp < currentTime){
+            return false;
+        }
+        return true;
+    }
+    catch (error){
+        return false;
+    }
+}
 const Layout = () => {
-
+    const [fbState, setFbState] = useState(false);
+    const [role, setRole] = useState('');
+    const [email,setEmail] = useState('');
+    const [telNumber,setTelNumber] = useState('');
+    const [fullName, setFullName] = useState('');
     const [authorizationActive, setAuthorizationActive] = useState(false);
     const [registrationActive, setRegistrationActive] = useState(false);
     const [regContent, setRegContent] = useState(false);
     const [isAuthorize, setIsAuthorize] = useState(false);
+
+    useEffect(() => {
+       const isValid = validateToken(localStorage.getItem('token'))
+        if(isValid){
+            setIsAuthorize(true)
+            setRole(localStorage.getItem('role'))
+        }
+        else {
+            setIsAuthorize(false)
+        }
+    },[]);
     const modalHandle = (active) => {
         setAuthorizationActive(active)
         setRegistrationActive(true)
@@ -24,10 +54,49 @@ const Layout = () => {
     const regHandle = (active) => {
         setRegContent(active);
     }
-    const authorizeHandle = (active) =>{
-        setIsAuthorize(active);
-        console.log(isAuthorize);
+    const authorizeHandle = (active, role) =>{
+        setRole(role)
+        setIsAuthorize(active)
+        if(active === true)
+            setAuthorizationActive(false)
     }
+    function clearData(bool){
+        console.log(bool)
+    }
+    async function feedBackHandle(e){
+        e.preventDefault();
+        if(email == '' || telNumber == '' || fullName == '')
+            return false;
+
+        let fbOrders = {
+            email: email,
+            telNumber: telNumber,
+            fullName: fullName
+        }
+        await fetch('https://localhost:7224/api/FeedbackOrders/addfborder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(fbOrders)
+
+        })
+            .then(response => response.json())
+            .then(data => {
+
+            })
+            .catch(error => {
+                setEmail('')
+                setTelNumber('')
+                setFullName('')
+                setFbState(true)
+            });
+    }
+    async function exitHandle() {
+        localStorage.setItem('token', null)
+        setIsAuthorize(false)
+    }
+
     return (
         <div>
             <Navbar collapseOnSelect expand="xl" variant="dark">
@@ -50,7 +119,7 @@ const Layout = () => {
                         <Nav>
                             {
                                 !isAuthorize ? (
-                                    <NavLink onClick={() => setAuthorizationActive(true)} eventKey={2} >
+                                    <NavLink style={{marginTop: 20}} onClick={() => setAuthorizationActive(true)} eventKey={2} >
                                         <a className="px-3">
                                             <svg width="80" height="32" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M4 1H76C77.6569 1 79 2.34315 79 4V28C79 29.6569 77.6569 31 76 31H4C2.34315 31 1 29.6569 1 28V20H0V28C0 30.2091 1.79086 32 4 32H76C78.2091 32 80 30.2091 80 28V4C80 1.79086 78.2091 0 76 0H4C1.79086 0 0 1.79086 0 4V12H1V4C1 2.34315 2.34315 1 4 1Z" fill="white"/>
@@ -65,14 +134,21 @@ const Layout = () => {
                                         </svg>
                                     </NavLink>
                                 ) : (
-                                    <NavLink eventKey={2} >
-                                        <Link to="/adminpage">
-                                            <FontAwesomeIcon icon={faGear} style={{color: "white"}} size="xl"/>
-                                        </Link>
+                                    <NavLink style={{marginTop: 20}} eventKey={2} >
+                                        {
+                                            role === 'b82b722b-e159-49ae-aa78-cb726192bf65' ? (
+                                                    <Link to="/adminpage">
+                                                        <FontAwesomeIcon icon={faGear} style={{color: "white"}} size="xl"/>
+                                                    </Link>
+                                                )
+                                                :(
+                                                    <div></div> 
+                                                )
+                                        }
                                         <FontAwesomeIcon icon={faUser} style={{color: "#ffffff", marginLeft: 20}} size="xl"/>
+                                        <FontAwesomeIcon onClick={exitHandle} icon={faArrowRightFromBracket} style={{color: "#ffffff", marginLeft: 20}} size="xl" />
                                     </NavLink>
                                 )
-                            }
                             }
                         </Nav>
                     </Navbar.Collapse>
@@ -81,16 +157,28 @@ const Layout = () => {
             <Outlet />
             <footer>
                 <div className="connection">
-                    <div className="connection-form">
-                        <div className="liner" />
-                        <h1>Просто заполните форму заявки. Мы свяжемся с вами</h1>
-                        <div className="liner mb-5" />
-                        <input type="text" placeholder="Имя"/>
-                        <input type="text" placeholder="Телефон"/>
-                        <input type="text" placeholder="Компания"/>
-                        <input type="text" placeholder="Email"/>
-                        <BlueButton width={170} height={50}>Оставить заявку</BlueButton>
-                    </div>
+                        {
+                            !fbState ? (
+                                <div className="connection-form">
+                                     <div className="liner" />
+                                     <h1>Просто заполните форму заявки. Мы свяжемся с вами</h1>
+                                     <div className="liner mb-5" />
+                                     <input value={fullName} onChange={e => setFullName(e.target.value)} type="text"  placeholder="ФИО"/>
+                                     <input value={telNumber} onChange={e => setTelNumber(e.target.value)} type="text" placeholder="Телефон" />
+                                     <input placeholder="Компания" />
+                                     <input value={email} onChange={e => setEmail(e.target.value)} type="text" placeholder="Email"/>
+                                    <BlueButton onClick={e => feedBackHandle(e)} width={170} height={50}>Оставить заявку</BlueButton>
+                                 </div>
+                            )
+                            : (
+                                <div className="connection-form">
+                                    <div className="liner" />
+                                    <h1>Ваша заявка принята. Мы свяжемся с вами в ближашее время!</h1>
+                                    <div className="liner mb-5" />
+                                    <img src={require('../../img/UI/ok.png')} width="170px" alt=""/>
+                                </div>
+                            )
+                        }
                 </div>
                 <div className="footer">
                 </div>
@@ -98,7 +186,7 @@ const Layout = () => {
             <Modal active={authorizationActive} setActive={setAuthorizationActive}>
                 <Authorization isAuthorize={authorizeHandle} modalHandle={modalHandle} />
             </Modal>
-            <Modal setActive={setRegistrationActive} active={registrationActive}>
+            <Modal clearData={clearData} setActive={setRegistrationActive} active={registrationActive}>
                 {
                     !regContent ?  <Registration regHandle={regHandle}/>
                         :

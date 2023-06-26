@@ -16,7 +16,6 @@ const ComplexBlock = (props) => {
                 <ul className="element-list">
                     {servicesList}
                 </ul>
-                <BlueButton width={120} height={28}>Выбрать</BlueButton>
             </div>
         </div>
     );

@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import './styles/AdminPage.css';
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
-import axios from "axios";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowRightFromBracket, faCirclePlus} from "@fortawesome/free-solid-svg-icons";
 import {
-    Button, ButtonGroup,
+    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -14,81 +13,198 @@ import {
 } from "@mui/material";
 import Modal from "../components/Modal/Modal";
 import {Link} from "react-router-dom";
-const AdminPage = () => {
+import axios from "axios";
 
+const AdminPage = () => {
     //Отрисовка контента
     const [page, setPage] = useState(1);
     const [data, setData] = useState([]);
     const [title, setTitle] = useState("");
     const [headers, setHeaders] = useState([]);
-    const loadData = async (url) => {
-        return  await axios
-            .get(`http://localhost:3000/` + url)
-            .then((response) =>
-            {
-                setData(response.data);
+    const [url, setUrl] = useState();
+    const [urlAdd, setUrlAdd] = useState();
+    const [urlDelete, setUrlDelete] = useState();
+    const [values, setValues] = useState([])
+    const [rowData, setRowData] = useState([]);
+
+    const loadData = async (prop) => {
+        fetch(`https://localhost:7224/api/` + prop, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setData(data);
+                // Обработка успешного ответа от сервера
             })
-            .catch((err) => console.log(err));
-    }
-    function BtnGroup() {
+            .catch(error => {
+                console.error('Ошибка при загрузке данных:', error);
+                // Обработка ошибки
+            });
+    };
+    function BtnGroup(obj) {
         return(
             <div className="w-75 btn-group" role="group">
-                <Button onClick={() => setModalActive(true)} variant="contained" color="success">
+                <Button onClick={() => updateModalOpen(obj)} variant="contained" color="success">
                     Обновить
                 </Button>
-                <Button onClick={handleClickOpen} variant="outlined" color="error">
+                <Button onClick={() => handleClickOpen(obj)} variant="outlined" color="error">
                     Удалить
                 </Button>
             </div>
         );
     }
-
     //Состояния для модалок
     const [open, setOpen] = React.useState(false);
     const [modalActive, setModalActive] = useState(false);
     const [modalAddActive, setModalAddActive] = useState(false);
-    const handleClickOpen = () => {
+    const handleClickOpen = (obj) => {
         setOpen(true);
+        setRowData(obj);
     };
     const handleClose = () => {
         setOpen(false);
     };
-
     useEffect(() => {
         pageHandle(1);
     }, [])
-
-
     function pageHandle(page) {
         setPage(page);
         switch (page) {
             case 1:
+                setUrl('Service/services')
+                setUrlDelete('Service/deleteservice/')
                 setTitle("Услуги");
                 setHeaders(['Наименование', 'Стоимость', 'Категория']);
-                loadData('services');
+                setUrlAdd('Service/addservice');
+                loadData('Service/services')
                 break;
             case 2:
+                setUrl('Category/categories')
+                setUrlAdd('Category/categorycreate');
+                setUrlDelete('Category/deletecategory/')
                 setTitle("Категории (услуги)");
                 setHeaders(['Наименование']);
-                loadData('categories')
+                loadData('Category/categories')
                 break;
             case 3:
+                setUrl('Post/posts')
                 setTitle("Посты");
+                setUrlAdd('Post/addpost');
                 setHeaders(['Заголовок','Короткое описание', 'Описание', 'Дата']);
-                loadData('news');
+                loadData('Post/posts')
                 break;
             case 4:
+                setUrlAdd('Report/addreport');
                 setTitle("Отзывы");
                 setHeaders(['ФИО','Должность', 'Описание']);
-                loadData('reports');
+                setUrl('Reports/reports')
+                loadData('Report/addreport')
                 break;
             case 5:
                 setTitle("Заявки на обратную связь");
                 setHeaders(['ФИО','Email','Номер телефона','Статус'])
-                loadData('users');
+                setUrl('FeedbackOrders/fborders')
+                loadData('FeedbackOrders/fborders')
                 break;
         }
+    }
+    const getValuesHandler = (event,index) => {
+       const {value} = event.target;
+       setValues((prevValues) => {
+           const updatedValues = [...prevValues];
+           updatedValues[index] = value;
+           return updatedValues;
+       });
+    }
+    const setValuesHandler = () => {
 
+    }
+
+    let objTodb = null;
+    const objCreate = (value) => {
+
+        const ruDate = new Intl.DateTimeFormat("ru", {day: "numeric", month: "long", year: "numeric", weekday: "long"})
+            .format(new Date()).replace(/(\s?\г\.?)/, "")
+
+        switch (page){
+            case 1:
+                objTodb = {
+                    title: value[0],
+                    price: value[1],
+                    categoryId: "d79eb1c8-1461-4d6b-b3a5-38ef14036291"
+                }
+                break;
+            case 2:
+                objTodb = {
+                    title: value[0],
+                }
+                break;
+            case 3:
+                objTodb = {
+                    post:{
+                        description: value[0],
+                        shortDescription: value[1],
+                        header: value[2],
+                        releaseDate: ruDate
+                    },
+                    image: null
+                }
+                break;
+            case 4:
+                objTodb = {
+                    report:{
+                        header: value[0],
+                        position: value[1],
+                        description: value[2]
+                    },
+                    image: null
+                }
+                break;
+        }
+        return objTodb;
+    }
+    const addHandler = () => {
+        fetch('https://localhost:7224/api/' + urlAdd, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token"),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(objCreate(values))
+
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    const updateModalOpen = (obj) => {
+        setModalActive(true)
+        setRowData(obj);
+        setValues(obj);
+    }
+    const updateHandle = () => {
+        console.log(rowData)
+    }
+    const deleteHandler = () => {
+        axios.delete('https://localhost:7224/api/' + urlDelete + rowData.obj.id , {
+            headers:{
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        })
+            .then(response => {
+                setOpen(false)
+                loadData(url)
+            })
+            .catch(error => {
+                console.error('Ошибка удаления данных', error);
+            });
     }
 
     return (
@@ -97,21 +213,25 @@ const AdminPage = () => {
                 <div className="update-modal">
                     <h3>Обновление {title}</h3>
                     {
-                        headers.map((header) => (
+                        headers.map((header, index) => (
                             <div className="update-modal__input">
-                                <TextField
-                                    id="outlined-number"
-                                    label={header}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                />
+                                {Object.keys(rowData).map(key => (
+                                    <TextField
+                                        id="outlined-number"
+                                        label={header}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={rowData[key]}
+                                        onChange={(e) => setValuesHandler(e, index)}
+                                    />
+                                ))}
                             </div>
                         ))
                     }
                     <div className="update-modal__input">
                         <Button className="update-modal__btn" variant="outlined" onClick={() => setModalActive(false)}>Отмена</Button>
-                        <Button className="update-modal__btn" variant="contained" color="success">
+                        <Button onClick={updateHandle} className="update-modal__btn" variant="contained" color="success">
                            Обновить
                         </Button>
                     </div>
@@ -133,7 +253,7 @@ const AdminPage = () => {
                     <Button onClick={() => setOpen(false)} color="primary">
                         Отмена
                     </Button>
-                    <Button variant="outlined" color="error">
+                    <Button onClick={deleteHandler} variant="outlined" color="error">
                         Удалить
                     </Button>
                 </DialogActions>
@@ -142,16 +262,16 @@ const AdminPage = () => {
             <Modal active={modalAddActive} setActive={setModalAddActive}>
                 <h4 className="mt-3 mb-3">Добавить новый элемент {title}</h4>
                 {
-                    headers.map((header) => (
+                    headers.map((header, index) => (
                         <div>
-                            <TextField fullWidth={true} className="add-input" id="outlined-basic" label={header} variant="outlined" />
+                            <TextField value={values[index] || ''} onChange={(e) => getValuesHandler(e,index)} fullWidth={true} className="add-input" id="outlined-basic" label={header} variant="outlined" />
                             <br/>
                         </div>
                     ))
                 }
                 <div className="group-btn">
                     <Button onClick={() => setModalAddActive(false)} variant="outlined">Отмена</Button>
-                    <Button variant="contained" color="success">
+                    <Button onClick={addHandler} variant="contained" color="success">
                         Добавить
                     </Button>
                 </div>
@@ -204,12 +324,12 @@ const AdminPage = () => {
                                         <tbody>
                                             {
                                                 page === 1 && data.map(item => (
-                                                    <tr>
+                                                    <tr key={item.id}>
                                                         <td width="40%">{item.title}</td>
                                                         <td width="20%">{item.price}</td>
                                                         <td width="20%">{item.category}</td>
                                                         <td className="text-center">
-                                                            <BtnGroup />
+                                                            <BtnGroup obj={item} />
                                                         </td>
                                                     </tr>
                                                 ))
@@ -217,9 +337,11 @@ const AdminPage = () => {
                                             {
                                                 page === 5 && data.map(item => (
                                                     <tr>
-                                                        <td width="40%">{item.name}</td>
-                                                        <td width="20%">{item.email}</td>
-                                                        <td width="20%">{item.phone}</td>
+
+                                                        {/*<td width="40%">{console.log(item.post.fullName)}</td>*/}
+                                                        {/*<td width="20%">{item.email}</td>*/}
+                                                        {/*<td width="20%">{item.telNumber}</td>*/}
+                                                        {/*<td width="20%">{item.status}</td>*/}
                                                         <td className="text-center">
                                                             <BtnGroup />
                                                         </td>
@@ -227,23 +349,26 @@ const AdminPage = () => {
                                                 ))
                                             }
                                             {
+                                                // page === 3 && data.map(item => (
+                                                //     <tr>
+                                                //         <td width="40%">{item.subject}</td>
+                                                //         <td width="20%">{item.shortdesc}</td>
+                                                //         <td width="20%">{item.date}</td>
+                                                //         <td className="text-center">
+                                                //             <BtnGroup />
+                                                //         </td>
+                                                //     </tr>
+                                                // ))
+                                            }
+                                            {
+
                                                 page === 3 && data.map(item => (
                                                     <tr>
-                                                        <td width="40%">{item.subject}</td>
-                                                        <td width="20%">{item.shortdesc}</td>
-                                                        <td width="20%">{item.date}</td>
-                                                        <td className="text-center">
-                                                            <BtnGroup />
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            }
-                                            {
-                                                page === 4 && data.map(item => (
-                                                    <tr>
-                                                        <td width="40%">{item.header}</td>
-                                                        <td width="20%">{item.position}</td>
-                                                        <td width="20%">{item.description}</td>
+                                                        {console.log(page)}
+                                                        <td width="40%">{item.post.description}</td>
+                                                        <td width="20%">{item.post.shortDescription}</td>
+                                                        <td width="20%">{item.post.header}</td>
+                                                        <td width="20%">{item.post.releaseDate}</td>
                                                         <td className="text-center">
                                                             <BtnGroup />
                                                         </td>
@@ -252,10 +377,10 @@ const AdminPage = () => {
                                             }
                                             {
                                                 page === 2 && data.map(item => (
-                                                    <tr>
+                                                    <tr key={item.id}>
                                                         <td width="40%">{item.title}</td>
                                                         <td className="text-center">
-                                                            <BtnGroup />
+                                                            <BtnGroup obj={item} />
                                                         </td>
                                                     </tr>
                                                 ))

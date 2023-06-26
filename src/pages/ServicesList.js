@@ -6,13 +6,11 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ComplexBlock from "../components/Blocks/ComplexBlock/ComplexBlock";
 import Paragraph from "../components/Paragraph/Paragraph";
 import {buhPage, rates, urPage} from "../data/StaticData";
-import {useLocation, useParams} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import {PaginatedItems} from "../components/Pagination/ServicePagination";
 import Card from "../components/Blocks/Card/Card";
 
-const ServicesList = (props) => {
-
-
+const ServicesList = () => {
 
     const [data, setData] = useState([]);
     const [value, setValue] = useState('');
@@ -32,14 +30,9 @@ const ServicesList = (props) => {
         },
     ]
 
-    const [data1, setData1] = useState([]);
-    useEffect(() => {
-        loadUsersData();
-    }, [])
-
     const loadUsersData = async () => {
         return  await axios
-            .get(`http://localhost:3000/services`)
+            .get(`https://localhost:7224/api/Service/services`)
             .then((response) =>
             {
                 setData(response.data);
@@ -49,21 +42,15 @@ const ServicesList = (props) => {
     }
     const handleSearch = async (e) => {
         return await axios
-            .get(`http://localhost:3000/services?q=${value}`)
+            .get(`https://localhost:7224/api/Service/search?searchString=${value}`)
             .then((response) => setData(response.data))
             .catch((err) => console.log(err));
     }
     const handleSort = async (e) => {
         let value = e.target.value;
         setSortValue(value);
-        if(value === "price"){
-            return await axios
-                .get(`http://localhost:3000/services?_sort=${Number(value)}&_order=desc`)
-                .then((response) => setData(response.data))
-                .catch((err) => console.log(err));
-        }
         return await axios
-            .get(`http://localhost:3000/services?_sort=${value}&_order=asc`)
+            .get(`https://localhost:7224/api/Service/filter?criteria=${value}&ascending=true`)
             .then((response) => setData(response.data))
             .catch((err) => console.log(err));
     }
@@ -73,6 +60,9 @@ const ServicesList = (props) => {
     }
 
     const location = useLocation();
+    useEffect(() => {
+        loadUsersData()
+    }, [])
     const title = location.state ? buhPage.map(item => item.title) : urPage.map(item => item.title);
     const description = location.state ? buhPage.map(item => item.description) : urPage.map(item => item.description);
 
@@ -89,14 +79,20 @@ const ServicesList = (props) => {
                         {description}
                    </p>
                 </div>
-                <Paragraph header="Бухгалтерские тарифы"/>
-                <div className="row pb-5 mb-5">
-                    {
-                        rates.map((rate) =>(
-                            <ComplexBlock rates={rate}/>
-                        ))
-                    }
-                </div>
+                {
+                    location.state ? (
+                        <div>
+                            <Paragraph header="Бухгалтерские тарифы"/>
+                            <div className="row pb-5 mb-5">
+                                {
+                                    rates.map((rate) =>(
+                                        <ComplexBlock rates={rate}/>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        ) : (<div></div>)
+                }
                 <div className="row">
 
                 </div>

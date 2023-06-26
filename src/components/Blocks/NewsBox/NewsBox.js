@@ -1,22 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './NewsBox.css'
 import BlueButton from "../../BlueButton/BlueButton";
-import Modal from "../../Modal/Modal";
 import {Link} from "react-router-dom";
 
-const NewsBox = ({props, button}) => {
+const NewsBox = ({props}) => {
 
     const state = {
         date: props.date,
         head: props.head,
-        content: props.content,
-        img: props.img,
-        desc: props.desc
+        shortDesc: props.content,
+        description: props.desc,
+        img: props.image,
     };
 
     return (
         <div className="news-block">
-            <img className="news-block__picture" src={props.img}/>
+            <img className="news-block__picture" src={props.img} />
             <div className="news-block__container">
                 <div className="block-date">
                     <svg className="date-logo" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

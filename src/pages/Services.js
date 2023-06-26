@@ -31,7 +31,7 @@ const Services = () => {
                     <div className="banner col-lg-12">
                         <div className="banner-block-1">
                             <img src={require('../img/UI/business.png')} />
-                            <p>Бухгалтерские услуг</p>
+                            <p>Бухгалтерские услуги</p>
                             <Link to="servicelist" state={true}>
                                     <button className="btn">
                                         Подробнее

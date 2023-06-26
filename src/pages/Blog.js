@@ -1,26 +1,27 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles/Blog.css';
-import {fakeNews} from "../data/StaticData";
 import Paragraph from "../components/Paragraph/Paragraph";
-import NewsBox from "../components/Blocks/NewsBox/NewsBox";
 import {BlogPagination} from "../components/Pagination/BlogPagination";
+import {fakeNews} from "../data/StaticData";
+import axios from "axios";
 
 
 const Blog = () => {
 
-    function Items({currentItems}){
-        return(
-            <div className="row">
-                {currentItems &&
-                    currentItems.map((item) => (
-                        <div className="col-md block">
-                            <NewsBox button={true} props={item}/>
-                        </div>
-                    ))}
-            </div>
-        );
-    }
-
+    const [data, setData] = useState([]);
+    useEffect(() => {
+         loadUsersData()
+     }, [])
+     const loadUsersData = async () => {
+         return await axios
+             .get(`https://localhost:7224/api/Post/posts`)
+             .then((response) =>
+             {
+                 setData(response.data);
+                 console.log(data);
+             })
+             .catch((err) => console.log(err));
+     }
 
     return (
         <div>

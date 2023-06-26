@@ -20,10 +20,10 @@ const Post = () => {
                     </svg>
                     <p style={{fontSize: 25}} className="news-block__date">{location.state.date}</p>
                 </div>
-                <h1 className="row mb-5">{location.state.content}</h1>
+                <h1 className="row mb-5">{location.state.shortDesc}</h1>
                 <img src={require("../img/news/postradavshie_avto1-1-2400x2000.jpg")} className="row" alt=""/>
                 <div className="text">
-                    <p className="mt-5">{location.state.desc}</p>
+                    <p className="mt-5">{location.state.description}</p>
                 </div>
             </div>
         </div>
